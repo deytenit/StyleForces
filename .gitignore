@@ -1,0 +1,9 @@
+/cf-log-parser-linux
+/cf-log-parser-macos
+/cf-log-parser-win.exe
+/dist
+/log.txt
+/name.txt
+/node_modules
+/output.json
+/package-lock.json
