@@ -9,13 +9,8 @@ import { ExtendedSubmission, isErrnoException, isExecFileError } from "../lib/ty
 const execFile = promisify(execFileCallback);
 
 export const HELP = `
-Usage: ... copyDetect [options...]
-Options:
-    -d <STRING>  : Path to the directory with submissions.
-    -l <STRING>  : Language tokenize during copydetection.
-    -o <STRING>  : Path to the resulted report. (default: './result.html')
-
-Example: ... copyDetect -d ./data -l cpp -o ./result.html
+Usage: ${process.execPath} copydetect [copydetect options...]
+Example: ${process.execPath} copydetect -t ./data -o cpp -O ./result.html
 `;
 
 function error(msg: string) {
@@ -25,35 +20,26 @@ function error(msg: string) {
 
 export async function execute() {
     const {
-        values: { dataDir, lang, outFile }
+        values: { "out-file": outFileArg }
     } = parseArgs({
         options: {
-            dataDir: {
+            "out-file": {
                 type: "string",
-                short: "d",
-                default: "./result"
-            },
-            lang: {
-                type: "string",
-                short: "l",
-                default: "cpp"
-            },
-            outFile: {
-                type: "string",
-                short: "o",
-                default: "./result.html"
+                short: "O"
             }
         },
-        args: process.argv.slice(3)
+        args: process.argv.slice(3),
+        strict: false
     });
 
-    if (!dataDir || !lang || !outFile) {
-        error("Arguments don't seem to be correct.");
-        return;
+    let outFile = typeof outFileArg === "boolean" || !outFileArg ? "./result.html" : outFileArg;
+
+    if (!outFile.endsWith(".html")) {
+        outFile = path.join(outFile, "./result.html");
     }
 
     try {
-        await execFile("copydetect", ["-t", dataDir, "-e", "src", "-o", lang, "-O", outFile, "-a"]);
+        await execFile("copydetect", process.argv.slice(3).concat(["-O", outFile, "-a"]));
     } catch (err) {
         if (isErrnoException(err)) {
             error("copydetect cannot be spawned. Check your environment.");
@@ -86,7 +72,9 @@ export async function execute() {
         ) as ExtendedSubmission;
 
         $(p).prepend(
-            `<b>${firstData.author.members[0].handle} - ${secondData.author.members[0].handle}</b><br>`
+            `<b>${firstData.author.members[0].name ?? firstData.author.members[0].handle} - ${
+                secondData.author.members[0].name ?? secondData.author.members[0].handle
+            }</b><br>`
         );
 
         $(first).replaceWith(`<a href="${firstData.url}">${firstData.id}</a>`);

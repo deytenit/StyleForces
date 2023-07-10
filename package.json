@@ -1,7 +1,7 @@
 {
   "name": "styleforces",
-  "version": "1.0.0",
-  "description": "Various tooling for codeforces interaction.",
+  "version": "2.0.1",
+  "description": "The Codeforces toolkit to make life easier for teachers and worse for students.",
   "main": "./dist/index.js",
   "scripts": {
     "start": "node ./dist/index.js",

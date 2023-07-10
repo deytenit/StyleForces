@@ -11,16 +11,16 @@ type SubmissionIndex = {
 };
 
 export const HELP = `
-Usage: ... fetchOk [options...]
+Usage: ${process.execPath} fetchOk [options...]
 Options:
-    -i (STRING)  : Contest ID.
-    -g <STRING>  : Group ID (if in group).
-    -c <INTEGER> : Positive amount of "OK" submissions to fetch. (default: 100)
-    -l <INTEGER> : Positive amouut of submissions to lookup. (default: 200)
-    -a <INTEGER> : Positive amount of submissions to skip. (default: 1)
-    -o <STRING>  : Path to the directory to write submissions to. (default: './result')
+    --contest, -i (STRING)  : Contest ID.
+    --group, -g   <STRING>  : Group ID (if in group).
+    --count, -c   <INTEGER> : Positive amount of "OK" submissions to fetch. (default: 100)
+    --lookup, -l  <INTEGER> : Positive amouut of submissions to lookup. (default: 200)
+    --after, -a   <INTEGER> : Positive amount of submissions to skip. (default: 1)
+    --out-dir, -O <STRING>  : Path to the directory to write submissions to. (default: './result')
 
-Example: ... fetchOk -i someId -g anotherId -c 50 -l 100 -a 10 -o './result'
+Example: ${process.execPath} fetchOk -i someId -g anotherId -c 50 -l 100 -a 10 -o './result'
 `;
 
 function error(msg: string) {
@@ -30,33 +30,39 @@ function error(msg: string) {
 
 export async function execute() {
     const {
-        values: { contestId, groupId, countArg, lookupArg, afterArg, outDir }
+        values: {
+            contest: contestId,
+            group: groupId,
+            count: countArg,
+            lookup: lookupArg,
+            after: afterArg,
+            "out-dir": outDirArg
+        }
     } = parseArgs({
         options: {
-            contestId: {
+            contest: {
                 type: "string",
                 short: "i"
             },
-            groupId: {
+            group: {
                 type: "string",
                 short: "g"
             },
-            countArg: {
+            count: {
                 type: "string",
                 short: "c"
             },
-            lookupArg: {
+            lookup: {
                 type: "string",
                 short: "l"
             },
-            afterArg: {
+            after: {
                 type: "string",
                 short: "a"
             },
-            outDir: {
+            "out-dir": {
                 type: "string",
-                short: "o",
-                default: "./output"
+                short: "O"
             }
         },
         args: process.argv.slice(3)
@@ -65,8 +71,9 @@ export async function execute() {
     const count = countArg && /^(0|[1-9]\d*)$/.test(countArg) ? parseInt(countArg) : 100;
     const lookup = lookupArg && /^(0|[1-9]\d*)$/.test(lookupArg) ? parseInt(lookupArg) : 200;
     const after = afterArg && /^(0|[1-9]\d*)$/.test(afterArg) ? parseInt(afterArg) : 1;
+    const outDir = outDirArg ?? "./result";
 
-    if (!contestId || !outDir) {
+    if (!contestId) {
         error("Arguments don't seem to be correct.");
         return;
     }

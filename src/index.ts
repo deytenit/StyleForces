@@ -1,5 +1,7 @@
-import * as copyDetect from "./command/copyDetect.js";
-import * as fetchOk from "./command/fetchOk.js";
+import { parseArgs } from "util";
+
+import * as copyDetect from "./command/copydetect.js";
+import * as fetchOK from "./command/fetchOk.js";
 import * as logSerializer from "./command/logSerializer.js";
 
 const HELP = `
@@ -7,14 +9,25 @@ Usage: ... (command) [arguments...]
 Commands:
     - logSerializer : Convert contest log to JSON with freeze-time.
     - fetchOk       : Fetch every "OK" submission from contest.
-    - copyDetect    : Compare submissions and generate copy report of them. (requires copydetect) 
+    - copydetect    : Compare submissions and generate copy report of them. (requires copydetect) 
 Environment:
     CF_KEY    : Codeforces API Key.
     CF_SECRET : Codeforces API Secret.
     CF_COOKIE : Cookies extracted from your session.
 `;
 
-const help = !!process.argv.find((arg) => arg === "-h");
+const {
+    values: { help }
+} = parseArgs({
+    options: {
+        help: {
+            type: "boolean",
+            short: "h"
+        }
+    },
+    args: process.argv.slice(3),
+    strict: false
+});
 
 switch (process.argv[2]) {
     case "logSerializer":
@@ -26,12 +39,12 @@ switch (process.argv[2]) {
         break;
     case "fetchOk":
         if (help) {
-            console.log(fetchOk.HELP);
+            console.log(fetchOK.HELP);
             break;
         }
-        fetchOk.execute();
+        fetchOK.execute();
         break;
-    case "copyDetect":
+    case "copydetect":
         if (help) {
             console.log(copyDetect.HELP);
             break;

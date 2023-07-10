@@ -17,14 +17,14 @@ interface Output {
 }
 
 export const HELP = `
-Usage: ... logSerializer [options...]
+Usage: ${process.execPath} logSerializer [options...]
 Options:
-    -f (INTEGER) : Freeze time counting from start in minutes.
-    -l (STRING)  : Path to the contest log file.
-    -d (STRING)  : Path to the domain's users file.
-    -o <STRING>  : Path to the resulted serialization. (default: './result.json')
+    --freeze, -f   (INTEGER) : Freeze time counting from start in minutes.
+    --lookup, -l   (STRING)  : Path to the contest log file.
+    --domain, -d   (STRING)  : Path to the domain's users file.
+    --out-file, -O <STRING>  : Path to the resulted serialization. (default: './result.json')
 
-Example: ... logSerializer -f 120 -l ./log.txt -d ./domain.txt -o ./result.json
+Example: ${process.execPath} logSerializer -f 120 -l ./log.txt -d ./domain.txt -o ./result.json
 `;
 
 function error(msg: string) {
@@ -34,31 +34,32 @@ function error(msg: string) {
 
 export async function execute() {
     const {
-        values: { freezeTime, logFile, domainFile, outFile }
+        values: { freeze: freezeTime, log: logFile, domain: domainFile, "out-file": outFileArg }
     } = parseArgs({
         options: {
-            freezeTime: {
+            freeze: {
                 type: "string",
                 short: "f"
             },
-            logFile: {
+            log: {
                 type: "string",
                 short: "l"
             },
-            domainFile: {
+            domain: {
                 type: "string",
                 short: "d"
             },
-            outFile: {
+            "out-file": {
                 type: "string",
-                short: "o",
-                default: "./result.json"
+                short: "O"
             }
         },
         args: process.argv.slice(3)
     });
 
-    if (!freezeTime || !logFile || !domainFile || !outFile) {
+    const outFile = outFileArg ?? "./result.json";
+
+    if (!freezeTime || !logFile || !domainFile) {
         error("Arguments don't seem to be correct.");
         return;
     }
