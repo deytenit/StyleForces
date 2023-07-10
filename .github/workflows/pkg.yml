@@ -1,0 +1,50 @@
+name: actions
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+jobs:
+  pkg:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [18.x]
+        pnpm-version: [8]
+
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v3
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Install PKG
+        run: npm install -g pkg
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: ESLint & Prettier
+        run: npm run lint
+
+      - name: Build
+        run: npm run build
+
+      - name: Test
+        run: npm run --if-present test
+
+      - name: Package
+        run: pkg --out-path ./artifacts ./dist/index.js
+
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: |
+            artifacts/*
+

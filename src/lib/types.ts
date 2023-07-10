@@ -90,7 +90,7 @@ export interface BaseSubmission {
 
 export interface ExtendedSubmission extends BaseSubmission {
     source: string;
-    csrf: string;
+    csrf?: string;
     url: string;
     groupId?: string;
 }

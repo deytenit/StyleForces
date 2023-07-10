@@ -3,6 +3,7 @@ import { mkdir, writeFile } from "fs/promises";
 import path from "path";
 
 import config from "../config.js";
+import { CfApiError } from "./codeforces.js";
 import { BaseSubmission, ExtendedSubmission } from "./types.js";
 
 function submissionUrl(id: string, contestId?: string, groupId?: string) {
@@ -21,6 +22,10 @@ export default class Submission {
     }
 
     public async ignore(): Promise<void> {
+        if (!this.data.csrf) {
+            throw new CfApiError("CSRF token is not defined.");
+        }
+
         await fetch(this.data.url, {
             headers: config.headers,
             body: new URLSearchParams({
@@ -56,7 +61,7 @@ export default class Submission {
 
         try {
             const source = $("#program-source-text").text();
-            const csrf = $("form.submission-action-form input[name=csrf_token]").attr().value;
+            const csrf = $("form.submission-action-form input[name=csrf_token]").attr()?.value;
             return new Submission({ ...submission, source, csrf, url, groupId });
         } catch {
             throw new Error("Cannot access source code of the submission.");

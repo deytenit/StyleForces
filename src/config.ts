@@ -1,7 +1,6 @@
 import path from "path";
-import { fileURLToPath } from "url";
 
-const ROOT = path.dirname(fileURLToPath(import.meta.url));
+const ROOT = __dirname;
 
 const config = {
     cfUrl: "https://codeforces.com",
