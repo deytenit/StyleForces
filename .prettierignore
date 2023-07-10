@@ -1,0 +1,5 @@
+# Node.js Tools
+node_modules
+
+# Typescript compiller artifacts
+dist/

@@ -1,90 +1,44 @@
-import { existsSync, readFileSync, writeFileSync } from "fs";
+import * as copyDetect from "./command/copyDetect.js";
+import * as fetchOk from "./command/fetchOk.js";
+import * as logSerializer from "./command/logSerializer.js";
 
-interface Run {
-    contestant: string;
-    problemLetter: string;
-    timeMinutesFromStart: number;
-    success: boolean;
-}
+const HELP = `
+Usage: ... (command) [arguments...]
+Commands:
+    - logSerializer : Convert contest log to JSON with freeze-time.
+    - fetchOk       : Fetch every "OK" submission from contest.
+    - copyDetect    : Compare submissions and generate copy report of them. (requires copydetect) 
+Environment:
+    CF_KEY    : Codeforces API Key.
+    CF_SECRET : Codeforces API Secret.
+    CF_COOKIE : Cookies extracted from your session.
+`;
 
-interface Output {
-    contestName: string;
-    freezeTimeMinutesFromStart: number;
-    problemLetters: string[];
-    contestants: string[];
-    runs: Run[];
-}
+const help = !!process.argv.find((arg) => arg === "-h");
 
-const pathToLog = process.argv[3];
-const pathToUser = process.argv[4];
-const freezeTime = process.argv[2];
-
-console.log(pathToLog, pathToUser);
-
-if (!existsSync(pathToLog) || !existsSync(pathToUser)) {
-    console.log("Cannot find path specified.")
-}
-
-const logs = readFileSync(pathToLog, "utf-8").trim().split("\n");
-const users = readFileSync(pathToUser, "utf-8").trim().split("\n");
-
-const names: Record<string, string> = {};
-
-for (const user of users) {
-    const values = user.split(" | ").map(value => value.trim());
-    names[values[1]] = values[3];
-}
-
-const output: Output = {
-    contestName: "",
-    freezeTimeMinutesFromStart: parseInt(freezeTime) || 0,
-    problemLetters: [],
-    contestants: [],
-    runs: []
-};
-
-for (const log of logs) {
-    const cmd = log.slice(0, log.indexOf(" ")).trim();
-    const csv = log.slice(log.indexOf(" ") + 1).trim();
-
-    switch (cmd) {
-        case "@contest": {
-            output.contestName = csv.replace(/"/g, "");
+switch (process.argv[2]) {
+    case "logSerializer":
+        if (help) {
+            console.log(logSerializer.HELP);
             break;
         }
-        case "@p": {
-            const values = csv.split(",");
-            output.problemLetters.push(values[0]);
+        logSerializer.execute();
+        break;
+    case "fetchOk":
+        if (help) {
+            console.log(fetchOk.HELP);
             break;
         }
-        case "@t": {
-            const values = csv.split(",");
-            output.contestants.push(names[values[3].split("=")[1]]);
+        fetchOk.execute();
+        break;
+    case "copyDetect":
+        if (help) {
+            console.log(copyDetect.HELP);
             break;
         }
-        case "@s": {
-            const values = csv.split(",");
-            const run: Run = {
-                contestant: output.contestants[parseInt(values[0]) - 1],
-                problemLetter: values[1],
-                timeMinutesFromStart: Math.floor(parseInt(values[3]) / 60),
-                success: values[4] === "OK" 
-            }
-
-            output.runs.push(run);
-            break;
-        }
-    }
-} 
-
-try {
-    writeFileSync("output.json", JSON.stringify(output));
-    console.log("✓ Successfully converted contest log file.");
-    console.log("➜ output.json");
+        copyDetect.execute();
+        break;
+    default:
+        console.log(HELP);
+        break;
 }
-catch {
-    console.log("Cannot write to file: output.json");
-}
-
-
-

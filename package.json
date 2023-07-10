@@ -1,17 +1,52 @@
 {
-    "name": "cf-log-parser",
-    "version": "1.0.0",
-    "description": "",
-    "main": "./dist/index.js",
-    "bin": "./dist/index.js",
-    "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1"
-    },
-    "author": "",
-    "license": "ISC",
-    "dependencies": {
-        "@types/node": "^18.0.6",
-        "pkg": "^5.8.0",
-        "typescript": "^4.7.4"
-    }
+  "name": "styleforces",
+  "version": "1.0.0",
+  "description": "Various tooling for codeforces interaction.",
+  "type": "module",
+  "main": "./dist/index.js",
+  "scripts": {
+    "start": "node ./dist/index.js",
+    "build": "npm exec tsc --build",
+    "clean": "npm exec tsc --build --clean",
+    "bootstrap": "npm run build && npm run start",
+    "lint": "npm exec eslint . && npm exec prettier --check .",
+    "format": "npm exec eslint --fix . && npm exec prettier --write . > /dev/null"
+  },
+  "license": "MIT",
+  "keywords": [
+    "codeforces",
+    "toolkit"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/unknowableshade/StyleForces.git"
+  },
+  "author": {
+    "name": "unknowableshade",
+    "email": "60275123+unknowableshade@users.noreply.github.com",
+    "url": "https://ermnvldmr.com"
+  },
+  "bugs": {
+    "url": "https://github.com/unknowableshade/StyleForces/issues"
+  },
+  "readme": "https://github.com/unknowableshade/StyleForces#readme",
+  "engines": {
+    "node": "18.x.x",
+    "npm": "*"
+  },
+  "devDependencies": {
+    "@types/cheerio": "^0.22.31",
+    "@types/node": "^20.3.3",
+    "@typescript-eslint/eslint-plugin": "^5.61.0",
+    "@typescript-eslint/parser": "^5.61.0",
+    "eslint": "^8.44.0",
+    "eslint-config-prettier": "^8.8.0",
+    "eslint-plugin-import": "^2.27.5",
+    "eslint-plugin-simple-import-sort": "^10.0.0",
+    "prettier": "^3.0.0",
+    "typescript": "^5.1.6"
+  },
+  "dependencies": {
+    "cheerio": "^1.0.0-rc.12"
+  }
 }
