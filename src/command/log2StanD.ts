@@ -17,14 +17,15 @@ interface Output {
 }
 
 export const HELP = `
-Usage: ${process.execPath} logSerializer [options...]
+Usage: ${process.execPath} log2StanD [options...]
 Options:
-    --freeze, -f   (INTEGER) : Freeze time counting from start in minutes.
-    --lookup, -l   (STRING)  : Path to the contest log file.
-    --domain, -d   (STRING)  : Path to the domain's users file.
-    --out-file, -O <STRING>  : Path to the resulted serialization. (default: './result.json')
+    --freeze, -f      (INTEGER) : Freeze time counting from start in minutes.
+    --log, -l         (STRING)  : Path to the contest log file.
+    --domain, -d      (STRING)  : Path to the domain's users file.
+    --only-domain, -i           : Ignore everyone not in domain.
+    --out-file, -O    <STRING>  : Path to the resulted serialization. (default: './result.json')
 
-Example: ${process.execPath} logSerializer -f 120 -l ./log.txt -d ./domain.txt -o ./result.json
+Example: ${process.execPath} log2StanD -f 120 -l ./log.txt -d ./domain.txt -o ./result.json
 `;
 
 function error(msg: string) {
@@ -34,7 +35,13 @@ function error(msg: string) {
 
 export async function execute() {
     const {
-        values: { freeze: freezeTime, log: logFile, domain: domainFile, "out-file": outFileArg }
+        values: {
+            freeze: freezeTime,
+            log: logFile,
+            domain: domainFile,
+            "only-domain": onlyDomain,
+            "out-file": outFileArg
+        }
     } = parseArgs({
         options: {
             freeze: {
@@ -48,6 +55,10 @@ export async function execute() {
             domain: {
                 type: "string",
                 short: "d"
+            },
+            "only-domain": {
+                type: "boolean",
+                short: "i"
             },
             "out-file": {
                 type: "string",
@@ -95,6 +106,8 @@ export async function execute() {
         runs: []
     };
 
+    const ignored = new Set<number>();
+
     for (const entry of log) {
         const cmd = entry.slice(0, entry.indexOf(" ")).trim();
         const csv = entry.slice(entry.indexOf(" ") + 1).trim();
@@ -111,19 +124,30 @@ export async function execute() {
             }
             case "@t": {
                 const values = csv.split(",");
-                output.contestants.push(names[values[3].split("=")[1]]);
+                const party = /^g\d+?=/.test(values[3]) ? values[3].split("=")[1] : values[3];
+
+                if (onlyDomain && !Object.hasOwn(names, party)) {
+                    ignored.add(ignored.size + output.contestants.length);
+                    continue;
+                }
+
+                output.contestants.push(names[party] ?? party);
                 break;
             }
             case "@s": {
                 const values = csv.split(",");
-                const run: Run = {
-                    contestant: output.contestants[parseInt(values[0]) - 1],
-                    problemLetter: values[1],
-                    timeMinutesFromStart: Math.floor(parseInt(values[3]) / 60),
-                    success: values[4] === "OK"
-                };
+                const contestantId = parseInt(values[0]) - 1;
 
-                output.runs.push(run);
+                if (!ignored.has(contestantId)) {
+                    const run: Run = {
+                        contestant: output.contestants[contestantId - ignored.size],
+                        problemLetter: values[1],
+                        timeMinutesFromStart: Math.floor(parseInt(values[3]) / 60),
+                        success: values[4] === "OK"
+                    };
+                    output.runs.push(run);
+                }
+
                 break;
             }
         }

@@ -1,15 +1,15 @@
 import { parseArgs } from "util";
 
 import * as copyDetect from "./command/copydetect.js";
-import * as fetchOK from "./command/fetchOk.js";
-import * as logSerializer from "./command/logSerializer.js";
+import * as fetchSubmissions from "./command/fetch.js";
+import * as log2stanD from "./command/log2StanD.js";
 
 const HELP = `
 Usage: ... (command) [arguments...]
 Commands:
-    - logSerializer : Convert contest log to JSON with freeze-time.
-    - fetchOk       : Fetch every "OK" submission from contest.
-    - copydetect    : Compare submissions and generate copy report of them. (requires copydetect) 
+    - log2StanD  : Convert contest log to JSON with freeze-time.
+    - fetch      : Fetch submission from contest.
+    - copydetect : Compare submissions and generate copy report of them. (requires copydetect) 
 Environment:
     CF_KEY    : Codeforces API Key.
     CF_SECRET : Codeforces API Secret.
@@ -30,19 +30,19 @@ const {
 });
 
 switch (process.argv[2]) {
-    case "logSerializer":
+    case "log2StanD":
         if (help) {
-            console.log(logSerializer.HELP);
+            console.log(log2stanD.HELP);
             break;
         }
-        logSerializer.execute();
+        log2stanD.execute();
         break;
-    case "fetchOk":
+    case "fetch":
         if (help) {
-            console.log(fetchOK.HELP);
+            console.log(fetchSubmissions.HELP);
             break;
         }
-        fetchOK.execute();
+        fetchSubmissions.execute();
         break;
     case "copydetect":
         if (help) {

@@ -11,16 +11,17 @@ type SubmissionIndex = {
 };
 
 export const HELP = `
-Usage: ${process.execPath} fetchOk [options...]
+Usage: ${process.execPath} fetch [options...]
 Options:
     --contest, -i (STRING)  : Contest ID.
     --group, -g   <STRING>  : Group ID (if in group).
-    --count, -c   <INTEGER> : Positive amount of "OK" submissions to fetch. (default: 100)
+    --count, -c   <INTEGER> : Positive amount of submissions to fetch. (default: 100)
     --lookup, -l  <INTEGER> : Positive amouut of submissions to lookup. (default: 200)
     --after, -a   <INTEGER> : Positive amount of submissions to skip. (default: 1)
+    --points, -p  <INTEGER> : Positive amount of points to filter. (default: 100)
     --out-dir, -O <STRING>  : Path to the directory to write submissions to. (default: './result')
 
-Example: ${process.execPath} fetchOk -i someId -g anotherId -c 50 -l 100 -a 10 -o './result'
+Example: ${process.execPath} fetch -i someId -g anotherId -c 50 -l 100 -a 10 -o './result'
 `;
 
 function error(msg: string) {
@@ -36,6 +37,7 @@ export async function execute() {
             count: countArg,
             lookup: lookupArg,
             after: afterArg,
+            points: pointsArg,
             "out-dir": outDirArg
         }
     } = parseArgs({
@@ -60,6 +62,10 @@ export async function execute() {
                 type: "string",
                 short: "a"
             },
+            points: {
+                type: "string",
+                short: "p"
+            },
             "out-dir": {
                 type: "string",
                 short: "O"
@@ -71,6 +77,7 @@ export async function execute() {
     const count = countArg && /^(0|[1-9]\d*)$/.test(countArg) ? parseInt(countArg) : 100;
     const lookup = lookupArg && /^(0|[1-9]\d*)$/.test(lookupArg) ? parseInt(lookupArg) : 200;
     const after = afterArg && /^(0|[1-9]\d*)$/.test(afterArg) ? parseInt(afterArg) : 1;
+    const points = pointsArg && /^(0|[1-9]\d*)$/.test(pointsArg) ? parseInt(pointsArg) : 100;
     const outDir = outDirArg ?? "./result";
 
     if (!contestId) {
@@ -95,7 +102,10 @@ export async function execute() {
     }
 
     const status = (await codeforces.methods.contestStatus(contestId, after, lookup))
-        .filter((submission) => submission.verdict === "OK")
+        .filter(
+            (submission) =>
+                submission.verdict === "OK" || (submission.points && submission.points >= points)
+        )
         .slice(0, count);
 
     for (const submission of status) {
