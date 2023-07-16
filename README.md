@@ -36,10 +36,11 @@ Usage: styleforces fetch [options...]
 Options:
     --contest, -i (STRING)  : Contest ID.
     --group, -g   <STRING>  : Group ID (if in group).
-    --count, -c   <INTEGER> : Positive number of submissions to fetch. (default: 100)
-    --lookup, -l  <INTEGER> : Positive number of submissions to lookup. (default: 200)
-    --after, -a   <INTEGER> : Positive number of submissions to skip. (default: 1)
-    --points, -p  <INTEGER> : Positive number of points to filter. (default: 100)
+    --count, -c   <INTEGER> : Positive amount of submissions to fetch. (default: 100)
+    --lookup, -l  <INTEGER> : Positive amouut of submissions to lookup. (default: 200)
+    --after, -a   <INTEGER> : Positive amount of submissions to skip. (default: 1)
+    --points, -p  <INTEGER> : Positive amount of points to filter. (default: 100)
+    --exclude, -e [STRING]  : Index of problems to exclude from fetching.
     --out-dir, -O <STRING>  : Path to the directory to write submissions to. (default: './result')
 Example: styleforces fetch -i someId -g anotherId -c 50 -l 100 -a 10 -o './result'
 ```
