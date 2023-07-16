@@ -19,6 +19,7 @@ Options:
     --lookup, -l  <INTEGER> : Positive amouut of submissions to lookup. (default: 200)
     --after, -a   <INTEGER> : Positive amount of submissions to skip. (default: 1)
     --points, -p  <INTEGER> : Positive amount of points to filter. (default: 100)
+    --exclude, -e [STRING]  : Index of problems to exclude from fetching.
     --out-dir, -O <STRING>  : Path to the directory to write submissions to. (default: './result')
 
 Example: ${process.execPath} fetch -i someId -g anotherId -c 50 -l 100 -a 10 -o './result'
@@ -38,6 +39,7 @@ export async function execute() {
             lookup: lookupArg,
             after: afterArg,
             points: pointsArg,
+            exclude: excludeArg,
             "out-dir": outDirArg
         }
     } = parseArgs({
@@ -66,6 +68,11 @@ export async function execute() {
                 type: "string",
                 short: "p"
             },
+            exclude: {
+                type: "string",
+                short: "e",
+                multiple: true
+            },
             "out-dir": {
                 type: "string",
                 short: "O"
@@ -78,6 +85,7 @@ export async function execute() {
     const lookup = lookupArg && /^(0|[1-9]\d*)$/.test(lookupArg) ? parseInt(lookupArg) : 200;
     const after = afterArg && /^(0|[1-9]\d*)$/.test(afterArg) ? parseInt(afterArg) : 1;
     const points = pointsArg && /^(0|[1-9]\d*)$/.test(pointsArg) ? parseInt(pointsArg) : 100;
+    const exclude = new Set<string>(excludeArg);
     const outDir = outDirArg ?? "./result";
 
     if (!contestId) {
@@ -118,7 +126,8 @@ export async function execute() {
                 (problem) =>
                     problem.contestId === submission.contestId &&
                     problem.name === submission.problem.name
-            )
+            ) ||
+            exclude.has(submission.problem.index)
         ) {
             continue;
         }
