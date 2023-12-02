@@ -1,16 +1,16 @@
 # StyleForces
 
-_The Codeforces toolkit to make life easier for teachers and worse for students._
+The Codeforces toolkit to make life easier for teachers and worse for students.
 
 > One year I made one thing, next year another. They're small but still useful, so I've bundled them.
 
 ## Commands
 
-_One binary contains multiple commands, here is the listing._
+One binary contains multiple commands, here is the listing.
 
 ### log2StanD
 
-_Convert contest log to JSON with freeze-time._
+Convert contest log to JSON with freeze-time.
 
 ```cs
 Usage: styleforces log2StanD [options...]
@@ -29,7 +29,7 @@ Example: styleforces log2StanD -f 120 -l ./log.txt -d ./domain.txt -o ./result.j
 
 ### fetch
 
-_Fetch contest submissions ("OK" or point-threshold)._
+Fetch contest submissions ("OK" or point-threshold).
 
 ```cs
 Usage: styleforces fetch [options...]
@@ -49,7 +49,7 @@ Example: styleforces fetch -i someId -g anotherId -c 50 -l 100 -a 10 -o './resul
 
 ### copydetect
 
-_Copydetect wrapper compatible with fetch command._
+Copydetect wrapper compatible with fetch command.
 
 ```cs
 Usage: styleforces copydetect [copydetect options...]
@@ -62,7 +62,7 @@ Example: styleforces copydetect -t ./data -o cpp -O ./result.html
 
 ## Enviroment
 
-_More about usage!_
+More about usage!
 
 ### Variables
 
