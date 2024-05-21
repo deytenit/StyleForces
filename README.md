@@ -37,7 +37,7 @@ Options:
     --contest, -i (STRING)  : Contest ID.
     --group, -g   <STRING>  : Group ID (if in group).
     --count, -c   <INTEGER> : Positive amount of submissions to fetch. (default: 100)
-    --lookup, -l  <INTEGER> : Positive amouut of submissions to lookup. (default: 200)
+    --lookup, -l  <INTEGER> : Positive amount of submissions to lookup. (default: 200)
     --after, -a   <INTEGER> : Positive amount of submissions to skip. (default: 1)
     --points, -p  <INTEGER> : Positive amount of points to filter. (default: 100)
     --exclude, -e [STRING]  : Index of problems to exclude from fetching.
